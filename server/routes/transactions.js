@@ -32,21 +32,21 @@ router.post('/',
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { type, amount, category, description, date, tags } = req.body;
+      const { type, amount, category, description, date } = req.body;
 
       const transaction = new Transaction({
         user: req.user.id,
         type,
-        amount,
+        amount: Number(amount),
         category,
         description,
-        date: date || Date.now(),
-        tags
+        date: date || Date.now()
       });
 
       await transaction.save();
       res.status(201).json(transaction);
     } catch (error) {
+      console.error('Error adding transaction:', error);
       res.status(500).json({ message: 'Server error' });
     }
   }
@@ -68,7 +68,7 @@ router.put('/:id',
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const transaction = await Transaction.findOne({
+      let transaction = await Transaction.findOne({
         _id: req.params.id,
         user: req.user.id
       });
@@ -77,16 +77,19 @@ router.put('/:id',
         return res.status(404).json({ message: 'Transaction not found' });
       }
 
-      const updateFields = ['type', 'amount', 'category', 'description', 'date', 'tags'];
-      updateFields.forEach(field => {
-        if (req.body[field] !== undefined) {
-          transaction[field] = req.body[field];
-        }
-      });
+      const { type, amount, category, description, date } = req.body;
+
+      // Update fields if they exist in the request
+      if (type) transaction.type = type;
+      if (amount) transaction.amount = Number(amount);
+      if (category) transaction.category = category;
+      if (description !== undefined) transaction.description = description;
+      if (date) transaction.date = date;
 
       await transaction.save();
       res.json(transaction);
     } catch (error) {
+      console.error('Error updating transaction:', error);
       res.status(500).json({ message: 'Server error' });
     }
   }
@@ -95,7 +98,7 @@ router.put('/:id',
 // Delete transaction
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const transaction = await Transaction.findOneAndDelete({
+    const transaction = await Transaction.findOne({
       _id: req.params.id,
       user: req.user.id
     });
@@ -104,8 +107,10 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
+    await transaction.deleteOne();
     res.json({ message: 'Transaction deleted' });
   } catch (error) {
+    console.error('Error deleting transaction:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

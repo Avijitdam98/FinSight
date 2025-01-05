@@ -1,65 +1,46 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const initialState = {
   transactions: [],
-  isLoading: false,
+  loading: false,
   error: null,
   filters: {
-    startDate: null,
-    endDate: null,
-    category: null,
-    minAmount: null,
-    maxAmount: null,
-    searchTerm: ''
-  },
-  stats: {
-    totalIncome: 0,
-    totalExpenses: 0,
-    balance: 0
-  },
-  insights: null
+    type: '',
+    category: '',
+    dateRange: 'all',
+    minAmount: '',
+    maxAmount: '',
+    search: ''
+  }
 };
 
 const transactionSlice = createSlice({
   name: 'transactions',
   initialState,
   reducers: {
-    fetchTransactionsStart: (state) => {
-      state.isLoading = true;
+    setTransactions: (state, action) => {
+      state.transactions = action.payload;
+      state.loading = false;
       state.error = null;
     },
-    fetchTransactionsSuccess: (state, action) => {
-      state.isLoading = false;
-      if (Array.isArray(action.payload)) {
-        state.transactions = action.payload;
-        state.stats = calculateStats(action.payload);
-      } else if (action.payload.transactions) {
-        state.transactions = action.payload.transactions;
-        state.stats = calculateStats(action.payload.transactions);
-      }
-      if (action.payload.insights) {
-        state.insights = action.payload.insights;
-      }
-      state.error = null;
+    setLoading: (state, action) => {
+      state.loading = action.payload;
     },
-    fetchTransactionsFailure: (state, action) => {
-      state.isLoading = false;
+    setError: (state, action) => {
       state.error = action.payload;
+      state.loading = false;
     },
-    addTransactionSuccess: (state, action) => {
+    addTransaction: (state, action) => {
       state.transactions.unshift(action.payload);
-      state.stats = calculateStats(state.transactions);
     },
-    updateTransactionSuccess: (state, action) => {
+    updateTransaction: (state, action) => {
       const index = state.transactions.findIndex(t => t._id === action.payload._id);
       if (index !== -1) {
         state.transactions[index] = action.payload;
-        state.stats = calculateStats(state.transactions);
       }
     },
-    deleteTransactionSuccess: (state, action) => {
+    deleteTransaction: (state, action) => {
       state.transactions = state.transactions.filter(t => t._id !== action.payload);
-      state.stats = calculateStats(state.transactions);
     },
     setFilters: (state, action) => {
       state.filters = { ...state.filters, ...action.payload };
@@ -70,38 +51,80 @@ const transactionSlice = createSlice({
   }
 });
 
-// Helper function to calculate transaction stats
-const calculateStats = (transactions) => {
-  if (!Array.isArray(transactions)) {
-    return initialState.stats;
-  }
-  
-  return transactions.reduce((acc, transaction) => {
-    const amount = Number(transaction.amount);
-    if (transaction.type === 'income') {
-      acc.totalIncome += amount;
-      acc.balance += amount;
-    } else {
-      acc.totalExpenses += amount;
-      acc.balance -= amount;
-    }
-    return acc;
-  }, {
-    totalIncome: 0,
-    totalExpenses: 0,
-    balance: 0
-  });
-};
-
 export const {
-  fetchTransactionsStart,
-  fetchTransactionsSuccess,
-  fetchTransactionsFailure,
-  addTransactionSuccess,
-  updateTransactionSuccess,
-  deleteTransactionSuccess,
+  setTransactions,
+  setLoading,
+  setError,
+  addTransaction,
+  updateTransaction,
+  deleteTransaction,
   setFilters,
   clearFilters
 } = transactionSlice.actions;
+
+// Memoized selectors
+const selectTransactions = state => state.transactions.transactions;
+const selectFilters = state => state.transactions.filters;
+
+export const selectFilteredTransactions = createSelector(
+  [selectTransactions, selectFilters],
+  (transactions, filters) => {
+    return transactions.filter(transaction => {
+      // Type filter
+      if (filters.type && transaction.type !== filters.type) {
+        return false;
+      }
+
+      // Category filter
+      if (filters.category && transaction.category !== filters.category) {
+        return false;
+      }
+
+      // Date range filter
+      if (filters.dateRange !== 'all') {
+        const transactionDate = new Date(transaction.date);
+        const today = new Date();
+        const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
+        const ninetyDaysAgo = new Date(today.setDate(today.getDate() - 90));
+        const thisYear = new Date(today.getFullYear(), 0, 1);
+
+        switch (filters.dateRange) {
+          case '30days':
+            if (transactionDate < thirtyDaysAgo) return false;
+            break;
+          case '90days':
+            if (transactionDate < ninetyDaysAgo) return false;
+            break;
+          case 'thisYear':
+            if (transactionDate < thisYear) return false;
+            break;
+          default:
+            break;
+        }
+      }
+
+      // Amount range filter
+      const amount = Number(transaction.amount);
+      if (filters.minAmount && amount < Number(filters.minAmount)) {
+        return false;
+      }
+      if (filters.maxAmount && amount > Number(filters.maxAmount)) {
+        return false;
+      }
+
+      // Search filter
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase();
+        return (
+          transaction.description?.toLowerCase().includes(searchTerm) ||
+          transaction.category.toLowerCase().includes(searchTerm) ||
+          transaction.type.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      return true;
+    });
+  }
+);
 
 export default transactionSlice.reducer;

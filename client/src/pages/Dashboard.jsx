@@ -14,8 +14,10 @@ import {
 } from 'chart.js';
 import { insightsAPI } from '../services/api';
 import { 
-  fetchTransactionsSuccess,
-  setFilters 
+  setTransactions,
+  setLoading as setTransactionLoading,
+  setError as setTransactionError,
+  selectFilteredTransactions
 } from '../store/slices/transactionSlice';
 import AIInsights from '../components/AIInsights';
 
@@ -33,10 +35,23 @@ ChartJS.register(
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const { insights, stats } = useSelector((state) => state.transactions);
+  const transactions = useSelector(selectFilteredTransactions);
   const [monthlyData, setMonthlyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Calculate stats from transactions
+  const stats = {
+    totalIncome: transactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0),
+    totalExpenses: transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0),
+    get balance() {
+      return this.totalIncome - this.totalExpenses;
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,183 +59,187 @@ const Dashboard = () => {
         setLoading(true);
         setError(null);
         
-        const [insightsRes, monthlyRes] = await Promise.all([
-          insightsAPI.getSpendingInsights(),
-          insightsAPI.getMonthlyData(),
-        ]);
+        // Get transactions for the last 12 months
+        const now = new Date();
+        const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+        
+        // Process transactions into monthly data
+        const monthlyIncomes = new Array(12).fill(0);
+        const monthlyExpenses = new Array(12).fill(0);
+        const labels = [];
 
-        dispatch(fetchTransactionsSuccess({
-          insights: insightsRes.data,
-          transactions: insightsRes.data.transactions || []
-        }));
-        setMonthlyData(monthlyRes.data);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-        setError('Failed to load dashboard data. Please try again later.');
+        // Generate labels for last 12 months
+        for (let i = 0; i < 12; i++) {
+          const date = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
+          labels.push(date.toLocaleString('default', { month: 'short' }));
+        }
+
+        // Process transactions
+        transactions.forEach(transaction => {
+          const transactionDate = new Date(transaction.date);
+          if (transactionDate >= twelveMonthsAgo) {
+            const monthIndex = labels.indexOf(
+              transactionDate.toLocaleString('default', { month: 'short' })
+            );
+            if (monthIndex !== -1) {
+              if (transaction.type === 'income') {
+                monthlyIncomes[monthIndex] += Number(transaction.amount);
+              } else {
+                monthlyExpenses[monthIndex] += Number(transaction.amount);
+              }
+            }
+          }
+        });
+
+        setMonthlyData({
+          labels,
+          datasets: [
+            {
+              label: 'Income',
+              data: monthlyIncomes,
+              borderColor: '#4CAF50',
+              backgroundColor: 'rgba(76, 175, 80, 0.1)',
+              tension: 0.4
+            },
+            {
+              label: 'Expenses',
+              data: monthlyExpenses,
+              borderColor: '#f44336',
+              backgroundColor: 'rgba(244, 67, 54, 0.1)',
+              tension: 0.4
+            }
+          ]
+        });
+      } catch (err) {
+        setError(err.message);
+        dispatch(setTransactionError(err.message));
       } finally {
         setLoading(false);
+        dispatch(setTransactionLoading(false));
       }
     };
 
-    fetchData();
-  }, [dispatch]);
+    if (transactions.length > 0) {
+      fetchData();
+    }
+  }, [dispatch, transactions]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          color: 'rgb(156, 163, 175)'
+        }
+      },
+      title: {
+        display: true,
+        text: 'Monthly Spending Trends',
+        color: 'rgb(156, 163, 175)',
+        font: {
+          size: 16,
+          weight: 'bold'
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(156, 163, 175, 0.1)'
+        },
+        ticks: {
+          color: 'rgb(156, 163, 175)',
+          callback: (value) => `$${value.toLocaleString()}`
+        }
+      },
+      x: {
+        grid: {
+          color: 'rgba(156, 163, 175, 0.1)'
+        },
+        ticks: {
+          color: 'rgb(156, 163, 175)'
+        }
+      }
+    }
+  };
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-        <div className="text-red-600 dark:text-red-400">{error}</div>
-      </div>
-    );
-  }
+  const pieChartData = {
+    labels: ['Income', 'Expenses'],
+    datasets: [
+      {
+        data: [stats.totalIncome, stats.totalExpenses],
+        backgroundColor: ['#4CAF50', '#f44336'],
+        hoverBackgroundColor: ['#45a049', '#e53935'],
+      },
+    ],
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8 text-gray-800 dark:text-white">
-        Financial Dashboard
-      </h1>
-
+    <div className="p-6">
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">
-            Total Income
-          </h3>
-          <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-            ${stats?.totalIncome?.toFixed(2) || '0.00'}
-          </p>
+          <h3 className="text-lg font-semibold mb-2 dark:text-white">Total Income</h3>
+          <p className="text-2xl text-green-600">${stats.totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">
-            Total Expenses
-          </h3>
-          <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-            ${stats?.totalExpenses?.toFixed(2) || '0.00'}
-          </p>
+          <h3 className="text-lg font-semibold mb-2 dark:text-white">Total Expenses</h3>
+          <p className="text-2xl text-red-600">${stats.totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-300">
-            Balance
-          </h3>
-          <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-            ${stats?.balance?.toFixed(2) || '0.00'}
+          <h3 className="text-lg font-semibold mb-2 dark:text-white">Balance</h3>
+          <p className={`text-2xl ${stats.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            ${Math.abs(stats.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
         </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        {monthlyData && (
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
-              Monthly Overview
-            </h3>
-            <Line
-              data={{
-                labels: Object.keys(monthlyData),
-                datasets: [
-                  {
-                    label: 'Income',
-                    data: Object.values(monthlyData).map(m => m.income),
-                    borderColor: 'rgb(34, 197, 94)',
-                    tension: 0.1
-                  },
-                  {
-                    label: 'Expenses',
-                    data: Object.values(monthlyData).map(m => m.expenses),
-                    borderColor: 'rgb(239, 68, 68)',
-                    tension: 0.1
-                  }
-                ]
-              }}
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4 dark:text-white">Monthly Overview</h3>
+          <div className="h-80">
+            {monthlyData ? (
+              <Line 
+                data={monthlyData}
+                options={chartOptions}
+              />
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4 dark:text-white">Income vs Expenses</h3>
+          <div className="h-80">
+            <Pie 
+              data={pieChartData}
               options={{
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                   legend: {
-                    position: 'top',
-                  },
-                  title: {
-                    display: false
+                    position: 'bottom',
+                    labels: {
+                      color: 'rgb(156, 163, 175)'
+                    }
                   }
                 }
               }}
             />
-          </div>
-        )}
-
-        {insights?.topSpendingCategories && (
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
-              Spending by Category
-            </h3>
-            <Pie
-              data={{
-                labels: insights.topSpendingCategories.map(c => c.category),
-                datasets: [{
-                  data: insights.topSpendingCategories.map(c => c.amount),
-                  backgroundColor: [
-                    'rgba(99, 102, 241, 0.8)',
-                    'rgba(34, 197, 94, 0.8)',
-                    'rgba(239, 68, 68, 0.8)',
-                    'rgba(245, 158, 11, 0.8)',
-                  ]
-                }]
-              }}
-              options={{
-                plugins: {
-                  legend: {
-                    position: 'bottom'
-                  }
-                }
-              }}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* AI Insights Section */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
-          AI-Powered Insights
-        </h2>
-        <AIInsights />
-      </div>
-
-      {/* Recommendations Section */}
-      {insights?.recommendations && (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">
-            Financial Recommendations
-          </h3>
-          <div className="space-y-4">
-            {insights.recommendations.map((rec, index) => (
-              <div 
-                key={index}
-                className="flex items-start space-x-3 text-gray-600 dark:text-gray-400"
-              >
-                {rec.type === 'warning' && <span className="text-yellow-500">⚠️</span>}
-                {rec.type === 'tip' && <span className="text-blue-500">💡</span>}
-                {rec.type === 'improvement' && <span className="text-green-500">📈</span>}
-                <div>
-                  <p className="font-medium">{rec.message}</p>
-                  {rec.action && (
-                    <p className="text-sm mt-1 text-gray-500 dark:text-gray-500">
-                      {rec.action}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
-      )}
+      </div>
+
+      {/* AI Insights */}
+      <AIInsights />
     </div>
   );
 };

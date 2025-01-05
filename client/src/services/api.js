@@ -45,11 +45,10 @@ export const authAPI = {
 
 // Transactions API
 export const transactionsAPI = {
-  getAll: (filters) => api.get('/transactions', { params: filters }),
+  getAll: () => api.get('/transactions'),
   add: (transaction) => api.post('/transactions', transaction),
   update: (id, transaction) => api.put(`/transactions/${id}`, transaction),
   delete: (id) => api.delete(`/transactions/${id}`),
-  export: (format) => api.get(`/transactions/export/${format}`),
 };
 
 // Insights API
