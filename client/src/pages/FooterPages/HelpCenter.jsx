@@ -154,7 +154,7 @@ const HelpCenter = () => {
                     Email Support
                   </h3>
                   <div className="mt-2 text-base text-gray-500">
-                    <p>support@finsight.com</p>
+                    <p>avijitdam003@gmail.com</p>
                     <p className="mt-1">We'll respond within 24 hours</p>
                   </div>
                 </div>

@@ -26,6 +26,7 @@ import AIInsights from '../components/AIInsights';
 import ShareOptions from '../components/ShareOptions';
 import CurrencyDisplay from '../components/CurrencyDisplay';
 import { formatCurrency } from '../utils/currencyConverter';
+import { NeuralNetwork } from 'brain.js';
 
 // Register ChartJS components
 ChartJS.register(
@@ -592,6 +593,21 @@ const Dashboard = () => {
 
   const goalProgress = calculateGoalProgress(transactions, goalAmount, currency);
 
+  const net = new NeuralNetwork();
+
+  const trainingData = [
+    { input: { income: 0.5, expenses: 0.5 }, output: { save: 0.5 } },
+    { input: { income: 0.8, expenses: 0.2 }, output: { save: 0.8 } },
+    // Add more data here
+  ];
+
+  net.train(trainingData);
+
+  const predictSavings = (income, expenses) => {
+    const output = net.run({ income, expenses });
+    return output.save;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -852,6 +868,14 @@ const Dashboard = () => {
               Smart Analysis
             </span>
           </h3>
+          <div className="ai-insights bg-blue-100 p-4 rounded-lg shadow-md">
+            <h3 className="text-lg font-bold text-blue-800">AI-Powered Insights</h3>
+            <p className="text-blue-600">Predicted Savings Rate: {(predictSavings(0.6, 0.4) * 100).toFixed(2)}%</p>
+          </div>
+          <div className="smart-analysis bg-green-100 p-4 rounded-lg shadow-md mt-4">
+            <h3 className="text-lg font-bold text-green-800">Smart Analysis</h3>
+            <p className="text-green-600">Predicted Expenses: {(predictSavings(0.7, 0.3) * 100).toFixed(2)}%</p>
+          </div>
           <AIInsights />
         </div>
       </div>

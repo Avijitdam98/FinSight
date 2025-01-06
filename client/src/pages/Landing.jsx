@@ -1,6 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import './Landing.css';
 
 const Landing = () => {
@@ -83,6 +84,11 @@ const Landing = () => {
     );
   };
 
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 1 } }
+  };
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -125,33 +131,39 @@ const Landing = () => {
           <div className="max-w-7xl mx-auto">
             <div className="lg:grid lg:grid-cols-12 lg:gap-8">
               <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                <h1 className="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
-                  <span className="block">Smart Expense</span>
-                  <span className="block text-indigo-200">Tracking with AI</span>
-                </h1>
-                <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                  Take control of your finances with our intelligent expense tracking solution. Get AI-powered insights and make smarter financial decisions.
-                </p>
-                <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left">
-                  <button
-                    onClick={handleGetStarted}
-                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-gray-50 transition duration-300"
-                  >
-                    Get Started
-                    <svg
-                      className="ml-2 -mr-1 w-5 h-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
+                <motion.div
+                  variants={fadeIn}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <h1 className="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
+                    <span className="block">Smart Expense</span>
+                    <span className="block text-indigo-200">Tracking with AI</span>
+                  </h1>
+                  <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+                    Take control of your finances with our intelligent expense tracking solution. Get AI-powered insights and make smarter financial decisions.
+                  </p>
+                  <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left">
+                    <button
+                      onClick={handleGetStarted}
+                      className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-gray-50 transition duration-300"
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                      Get Started
+                      <svg
+                        className="ml-2 -mr-1 w-5 h-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </motion.div>
               </div>
               <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
                 <div className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
