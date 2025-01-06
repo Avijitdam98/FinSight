@@ -608,6 +608,20 @@ const Dashboard = () => {
     return output.save;
   };
 
+  const [savingsRate, setSavingsRate] = useState(0);
+  const [expensesRate, setExpensesRate] = useState(0);
+
+  useEffect(() => {
+    const income = transactions.reduce((sum, t) => t.type === 'income' ? sum + t.amount : sum, 0);
+    const expenses = transactions.reduce((sum, t) => t.type === 'expense' ? sum + t.amount : sum, 0);
+
+    const savings = predictSavings(income, expenses);
+    const expensesPred = predictSavings(expenses, income);
+
+    setSavingsRate(savings);
+    setExpensesRate(expensesPred);
+  }, [transactions]);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -870,11 +884,11 @@ const Dashboard = () => {
           </h3>
           <div className="ai-insights bg-blue-100 p-4 rounded-lg shadow-md">
             <h3 className="text-lg font-bold text-blue-800">AI-Powered Insights</h3>
-            <p className="text-blue-600">Predicted Savings Rate: {(predictSavings(0.6, 0.4) * 100).toFixed(2)}%</p>
+            <p className="text-blue-600">Predicted Savings Rate: {(savingsRate * 100).toFixed(2)}%</p>
           </div>
           <div className="smart-analysis bg-green-100 p-4 rounded-lg shadow-md mt-4">
             <h3 className="text-lg font-bold text-green-800">Smart Analysis</h3>
-            <p className="text-green-600">Predicted Expenses: {(predictSavings(0.7, 0.3) * 100).toFixed(2)}%</p>
+            <p className="text-green-600">Predicted Expenses: {(expensesRate * 100).toFixed(2)}%</p>
           </div>
           <AIInsights />
         </div>
