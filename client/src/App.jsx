@@ -2,9 +2,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { Helmet } from 'react-helmet';
 
 // Components
 import Navbar from './components/Navbar';
+import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import Login from './pages/Login';
@@ -17,8 +19,14 @@ function App() {
       <ThemeProvider>
         <Router>
           <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Helmet>
+              <title>FinSight AI | Smart Personal Finance Tracker</title>
+              <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+              <meta name="theme-color" content="#4f46e5" />
+              <meta name="description" content="FinSight AI - Smart Personal Finance Tracker with AI Insights" />
+            </Helmet>
             <Navbar />
-            <div className="container mx-auto px-4 py-8">
+            <Layout>
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -33,7 +41,7 @@ function App() {
                   </PrivateRoute>
                 } />
               </Routes>
-            </div>
+            </Layout>
           </div>
         </Router>
       </ThemeProvider>
