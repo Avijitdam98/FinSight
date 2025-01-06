@@ -47,20 +47,20 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
-          Create an Account
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 to-gray-200">
+      <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md">
+        <h2 className="text-4xl font-extrabold mb-8 text-center text-gray-900">
+          Join Us
         </h2>
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
             {error}
           </div>
         )}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
             <label
-              className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+              className="block text-gray-700 text-sm font-medium mb-1"
               htmlFor="name"
             >
               Name
@@ -71,13 +71,13 @@ const Register = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
-          <div className="mb-4">
+          <div>
             <label
-              className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+              className="block text-gray-700 text-sm font-medium mb-1"
               htmlFor="email"
             >
               Email
@@ -88,13 +88,13 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
           </div>
-          <div className="mb-4">
+          <div className="relative">
             <label
-              className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+              className="block text-gray-700 text-sm font-medium mb-1"
               htmlFor="password"
             >
               Password
@@ -105,13 +105,18 @@ const Register = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
+            <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+              <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12h.01M19 12c0 3.866-3.582 7-8 7s-8-3.134-8-7 3.582-7 8-7 8 3.134 8 7zM12 15l-3-3m0 0l3-3m-3 3h12" />
+              </svg>
+            </span>
           </div>
-          <div className="mb-6">
+          <div className="relative">
             <label
-              className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2"
+              className="block text-gray-700 text-sm font-medium mb-1"
               htmlFor="confirmPassword"
             >
               Confirm Password
@@ -122,18 +127,29 @@ const Register = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
+            <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+              <svg className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12h.01M19 12c0 3.866-3.582 7-8 7s-8-3.134-8-7 3.582-7 8-7 8 3.134 8 7zM12 15l-3-3m0 0l3-3m-3 3h12" />
+              </svg>
+            </span>
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 disabled:opacity-50"
+            className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 disabled:opacity-50 transition-all duration-300"
           >
-            {loading ? 'Creating Account...' : 'Register'}
+            {loading ? 'Signing up...' : 'Sign Up'}
           </button>
         </form>
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <a href="/login" className="text-green-600 hover:text-green-500">
+            Log In
+          </a>
+        </p>
       </div>
     </div>
   );
