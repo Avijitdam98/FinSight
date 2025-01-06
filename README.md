@@ -2,7 +2,8 @@
 
 FinSight is a modern, AI-driven personal finance management application built with the MERN stack (MongoDB, Express.js, React.js, Node.js). It helps users track expenses, analyze spending patterns, and receive AI-powered financial insights and recommendations.
 
-![FinSight Dashboard](screenshots/dashboard.png)
+![FinSight Dashboard](![Uploading image.png…]()
+)
 
 ## Features
 
