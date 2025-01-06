@@ -571,264 +571,289 @@ const Dashboard = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const calculateGoalProgress = (transactions, goalAmount, currency) => {
+    const totalIncome = transactions
+      .filter((transaction) => transaction.type === 'income' && transaction.currency === currency)
+      .reduce((sum, transaction) => sum + transaction.amount, 0);
+    console.log('Total Income:', totalIncome, 'Goal Amount:', goalAmount, 'Currency:', currency);
+    return (totalIncome / goalAmount) * 100;
+  };
+
+  const [goalAmount, setGoalAmount] = useState(10000); // Default goal amount
+  const [currency, setCurrency] = useState('USD');
+
+  const handleGoalChange = (e) => {
+    setGoalAmount(Number(e.target.value));
+  };
+
+  const handleCurrencyChange = (e) => {
+    setCurrency(e.target.value);
+  };
+
+  const goalProgress = calculateGoalProgress(transactions, goalAmount, currency);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
-      {/* Header Section */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Financial Overview</h1>
-          <ShareOptions onShare={(shareData) => console.log('Shared:', shareData)} />
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">Track your income, expenses, and financial insights</p>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Dashboard</h1>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-gray-400">Total Income</h2>
-            <span className="bg-green-600 text-white text-xs px-2 py-1 rounded">Income</span>
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-gray-900 dark:text-gray-400">Total Income</h2>
+              <span className="bg-green-600 text-white text-xs px-2 py-1 rounded">Income</span>
+            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <CurrencyDisplay amount={stats.totalIncome} type="income" />
+            </div>
+            <div className="text-green-400 text-sm mt-1">↑ Updated in real-time</div>
           </div>
-          <div className="text-2xl font-bold text-white">
-            <CurrencyDisplay amount={stats.totalIncome} type="income" />
-          </div>
-          <div className="text-green-400 text-sm mt-1">↑ Updated in real-time</div>
-        </div>
 
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-gray-400">Total Expenses</h2>
-            <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">Expenses</span>
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-gray-900 dark:text-gray-400">Total Expenses</h2>
+              <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">Expenses</span>
+            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <CurrencyDisplay amount={stats.totalExpenses} type="expense" />
+            </div>
+            <div className="text-red-400 text-sm mt-1">↓ Track your spending</div>
           </div>
-          <div className="text-2xl font-bold text-white">
-            <CurrencyDisplay amount={stats.totalExpenses} type="expense" />
-          </div>
-          <div className="text-red-400 text-sm mt-1">↓ Track your spending</div>
-        </div>
 
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-gray-400">Current Balance</h2>
-            <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">Balance</span>
-          </div>
-          <div className="text-2xl font-bold text-white">
-            <CurrencyDisplay 
-              amount={stats.balance} 
-              className={stats.balance >= 0 ? 'text-green-500' : 'text-red-500'}
-              showPositiveSign={true}
-            />
-          </div>
-          <div className="text-blue-400 text-sm mt-1">↓ Net Position</div>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Monthly Overview</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Last 12 months</span>
-          </h3>
-          <div className="h-80">
-            {monthlyData ? (
-              <Line 
-                data={monthlyData}
-                options={chartOptions}
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-gray-900 dark:text-gray-400">Current Balance</h2>
+              <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">Balance</span>
+            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <CurrencyDisplay 
+                amount={stats.balance} 
+                className={stats.balance >= 0 ? 'text-green-500' : 'text-red-500'}
+                showPositiveSign={true}
               />
-            ) : (
-              <div className="flex justify-center items-center h-full">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-              </div>
-            )}
+            </div>
+            <div className="text-blue-400 text-sm mt-1">↓ Net Position</div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+        {/* Real-Time Cash Flow */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow mb-6">
           <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Spending Trends</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Last 6 Months</span>
+            <span>Real-Time Cash Flow</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Current</span>
           </h3>
-          <div className="h-80">
-            <Line 
-              data={spendingTrendsData}
-              options={{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    position: 'top',
-                    labels: {
-                      usePointStyle: true,
-                      color: 'rgb(156, 163, 175)'
-                    }
-                  },
-                  title: {
-                    display: true,
-                    text: 'Spending Trends',
-                    color: 'rgb(156, 163, 175)',
-                    font: {
-                      size: 16,
-                      weight: 'bold'
-                    }
-                  }
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.1)'
-                    },
-                    ticks: {
-                      color: 'rgb(156, 163, 175)',
-                      callback: (value) => formatCurrency(value, settings?.preferences?.currency, 'USD')
-                    }
-                  },
-                  x: {
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.1)'
-                    },
-                    ticks: {
-                      color: 'rgb(156, 163, 175)'
-                    }
-                  }
-                }
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Additional Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Category Breakdown</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Spending by Category</span>
-          </h3>
-          <Bar data={categoryBreakdownData} />
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(stats.balance, settings?.preferences?.currency, 'USD')}</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Income vs Expenses</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Distribution</span>
-          </h3>
-          <Pie data={incomeVsExpensesData} />
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Expense Categories</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Monthly</span>
-          </h3>
-          <div className="h-64">
-            <PolarArea 
-              data={categoryData}
-              options={{
-                ...commonChartOptions,
-                plugins: {
-                  ...commonChartOptions.plugins,
-                  tooltip: {
-                    callbacks: {
-                      label: (context) => formatCurrency(context.raw, settings?.preferences?.currency, 'USD')
-                    }
-                  }
-                }
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Additional Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Weekly Cash Flow</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Income vs Expenses</span>
-          </h3>
-          <div className="h-64">
-            <Bar 
-              data={weeklyData}
-              options={{
-                ...commonChartOptions,
-                scales: {
-                  y: {
-                    stacked: true,
-                    grid: {
-                      color: colors.neutral.light
-                    },
-                    ticks: {
-                      color: colors.neutral.main,
-                      callback: (value) => formatCurrency(value, settings?.preferences?.currency, 'USD')
-                    }
-                  },
-                  x: {
-                    stacked: true,
-                    grid: {
-                      display: false
-                    },
-                    ticks: {
-                      color: colors.neutral.main
-                    }
-                  }
-                }
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Financial Wellness</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Metrics</span>
-          </h3>
-          <div className="h-64">
-            <Radar 
-              data={radarData}
-              options={{
-                ...commonChartOptions,
-                plugins: {
-                  ...commonChartOptions.plugins,
-                  tooltip: {
-                    callbacks: {
-                      label: (context) => `${context.dataset.label}: ${context.formattedValue}%`
-                    }
-                  }
-                }
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Recent Transactions</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Latest Activity</span>
-          </h3>
-          <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-            {transactions.slice(0, 5).map((transaction, index) => (
-              <li key={transaction.id || index} className="py-4 flex justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{transaction.category}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(transaction.date)}</p>
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+              <span>Monthly Overview</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Last 12 months</span>
+            </h3>
+            <div className="h-80">
+              {monthlyData ? (
+                <Line 
+                  data={monthlyData}
+                  options={chartOptions}
+                />
+              ) : (
+                <div className="flex justify-center items-center h-full">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
-                <div className="text-sm text-gray-900 dark:text-white">{transaction.amount}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+              )}
+            </div>
+          </div>
 
-      {/* AI Insights */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-        <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center">
-          <span>AI-Powered Insights</span>
-          <span className="ml-2 px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded-full">
-            Smart Analysis
-          </span>
-        </h3>
-        <AIInsights />
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+              <span>Spending Trends</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Last 6 Months</span>
+            </h3>
+            <div className="h-80">
+              <Line 
+                data={spendingTrendsData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: 'top',
+                      labels: {
+                        usePointStyle: true,
+                        color: 'rgb(156, 163, 175)'
+                      }
+                    },
+                    title: {
+                      display: true,
+                      text: 'Spending Trends',
+                      color: 'rgb(156, 163, 175)',
+                      font: {
+                        size: 16,
+                        weight: 'bold'
+                      }
+                    }
+                  },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      grid: {
+                        color: 'rgba(156, 163, 175, 0.1)'
+                      },
+                      ticks: {
+                        color: 'rgb(156, 163, 175)',
+                        callback: (value) => formatCurrency(value, settings?.preferences?.currency, 'USD')
+                      }
+                    },
+                    x: {
+                      grid: {
+                        color: 'rgba(156, 163, 175, 0.1)'
+                      },
+                      ticks: {
+                        color: 'rgb(156, 163, 175)'
+                      }
+                    }
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+              <span>Category Breakdown</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Spending by Category</span>
+            </h3>
+            <Bar data={categoryBreakdownData} />
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+              <span>Income vs Expenses</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Distribution</span>
+            </h3>
+            <Pie data={incomeVsExpensesData} />
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+              <span>Expense Categories</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Monthly</span>
+            </h3>
+            <div className="h-64">
+              <PolarArea 
+                data={categoryData}
+                options={{
+                  ...commonChartOptions,
+                  plugins: {
+                    ...commonChartOptions.plugins,
+                    tooltip: {
+                      callbacks: {
+                        label: (context) => formatCurrency(context.raw, settings?.preferences?.currency, 'USD')
+                      }
+                    }
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+              <span>Weekly Cash Flow</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Income vs Expenses</span>
+            </h3>
+            <div className="h-64">
+              <Bar 
+                data={weeklyData}
+                options={{
+                  ...commonChartOptions,
+                  scales: {
+                    y: {
+                      stacked: true,
+                      grid: {
+                        color: colors.neutral.light
+                      },
+                      ticks: {
+                        color: colors.neutral.main,
+                        callback: (value) => formatCurrency(value, settings?.preferences?.currency, 'USD')
+                      }
+                    },
+                    x: {
+                      stacked: true,
+                      grid: {
+                        display: false
+                      },
+                      ticks: {
+                        color: colors.neutral.main
+                      }
+                    }
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+              <span>Financial Wellness</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Metrics</span>
+            </h3>
+            <div className="h-64">
+              <Radar 
+                data={radarData}
+                options={{
+                  ...commonChartOptions,
+                  plugins: {
+                    ...commonChartOptions.plugins,
+                    tooltip: {
+                      callbacks: {
+                        label: (context) => `${context.dataset.label}: ${context.formattedValue}%`
+                      }
+                    }
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+            <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+              <span>Recent Transactions</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Latest Activity</span>
+            </h3>
+            <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+              {transactions.slice(0, 5).map((transaction, index) => (
+                <li key={transaction.id || index} className="py-4 flex justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{transaction.category}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(transaction.date)}</p>
+                  </div>
+                  <div className="text-sm text-gray-900 dark:text-white">{transaction.amount}</div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* AI Insights */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center">
+            <span>AI-Powered Insights</span>
+            <span className="ml-2 px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 rounded-full">
+              Smart Analysis
+            </span>
+          </h3>
+          <AIInsights />
+        </div>
       </div>
     </div>
   );

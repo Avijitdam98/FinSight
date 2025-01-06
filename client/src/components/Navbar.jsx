@@ -6,6 +6,7 @@ import BadgeIcon from './BadgeIcon';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiSun, FiMoon } from 'react-icons/fi';
 import { useTheme } from '../contexts/ThemeContext';
+import navbarLogo from '../assets/navbar-logo.svg';
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -36,14 +37,13 @@ const Navbar = () => {
       whileTap={{ scale: 0.95 }}
       className="flex items-center space-x-2"
     >
-      <motion.div
-        initial={{ rotate: 0 }}
-        animate={{ rotate: [0, -10, 10, -10, 0] }}
-        transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 5 }}
-        className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center"
-      >
-        <span className="text-white text-lg font-bold">F</span>
-      </motion.div>
+      <motion.img
+        src={navbarLogo}
+        alt="FinSight Logo"
+        className="h-8 w-8"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      />
       <span className="text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
         FinSight
       </span>
