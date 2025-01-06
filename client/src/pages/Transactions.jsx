@@ -12,6 +12,8 @@ import {
 import { transactionsAPI } from '../services/api';
 import TransactionFilter from '../components/TransactionFilter';
 import { exportToCSV, exportToPDF } from '../utils/exportUtils';
+import { formatCurrency } from '../utils/currencyConverter';
+import CurrencyDisplay from '../components/CurrencyDisplay';
 
 const CATEGORIES = [
   'Food',
@@ -31,6 +33,7 @@ const CATEGORIES = [
 const Transactions = () => {
   const dispatch = useDispatch();
   const filteredTransactions = useSelector(selectFilteredTransactions);
+  const { data: settings } = useSelector((state) => state.settings);
   const loading = useSelector(state => state.transactions.loading);
   const error = useSelector(state => state.transactions.error);
   
@@ -132,7 +135,7 @@ const Transactions = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold dark:text-white">Transactions</h1>
         <div className="space-x-4">
@@ -253,31 +256,31 @@ const Transactions = () => {
         </form>
       )}
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+      <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-900">
+          <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Date
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Type
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Category
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Amount
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Description
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
             {filteredTransactions.map((transaction) => (
               <tr key={transaction._id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
@@ -294,9 +297,10 @@ const Transactions = () => {
                   {transaction.category}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
-                  <span className={transaction.type === 'income' ? 'text-green-600' : 'text-red-600'}>
-                    ${transaction.amount.toFixed(2)}
-                  </span>
+                  <CurrencyDisplay 
+                    amount={transaction.amount} 
+                    type={transaction.type}
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                   {transaction.description}

@@ -1,6 +1,22 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const API_URL = 'http://localhost:5000/api';
+
+// Set up axios interceptor for auth token
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 const initialState = {
   data: {
     preferences: {
@@ -25,7 +41,7 @@ export const fetchSettings = createAsyncThunk(
   'settings/fetchSettings',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/settings');
+      const response = await axios.get(`${API_URL}/settings`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch settings');
@@ -37,7 +53,7 @@ export const updateSettings = createAsyncThunk(
   'settings/updateSettings',
   async (settings, { rejectWithValue }) => {
     try {
-      const response = await axios.put('/api/settings', settings);
+      const response = await axios.put(`${API_URL}/settings`, settings);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to update settings');
@@ -51,6 +67,14 @@ const settingsSlice = createSlice({
   reducers: {
     updateSettingLocally: (state, action) => {
       const { category, field, value } = action.payload;
+      
+      // Handle nested notifications updates
+      if (category === 'preferences' && field === 'notifications') {
+        state.data.preferences.notifications[value] = !state.data.preferences.notifications[value];
+        return;
+      }
+
+      // Handle regular field updates
       if (!state.data[category]) {
         state.data[category] = {};
       }

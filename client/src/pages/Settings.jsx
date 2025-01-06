@@ -11,7 +11,7 @@ const Settings = () => {
   const { darkMode } = useTheme();
   const { user } = useSelector((state) => state.auth);
   const { data: settings, isLoading, error } = useSelector((state) => state.settings);
-  
+  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -38,12 +38,37 @@ const Settings = () => {
 
   const handleSave = async () => {
     try {
+      setIsSaving(true);
       await dispatch(updateSettings(settings)).unwrap();
       toast.success('Settings saved successfully!');
     } catch (error) {
       toast.error(error.message || 'Failed to save settings');
+    } finally {
+      setIsSaving(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="text-red-500 text-lg mb-4">{error}</div>
+        <button 
+          onClick={() => dispatch(fetchSettings())}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: BiUser },
@@ -281,36 +306,29 @@ const Settings = () => {
 
         {/* Content Area */}
         <div className="p-4 sm:p-6">
-          {isLoading ? (
-            <div className="flex justify-center items-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-            </div>
-          ) : error ? (
-            <div className="text-red-500 dark:text-red-400 text-center py-8">
-              {error}
-            </div>
-          ) : (
-            <>
-              {renderTabContent()}
-              
-              <div className="mt-6 flex justify-end">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleSave}
-                  disabled={isLoading}
-                  className={`
-                    inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium 
-                    rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 
-                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
-                    ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
-                  `}
-                >
-                  {isLoading ? 'Saving...' : 'Save Changes'}
-                </motion.button>
-              </div>
-            </>
-          )}
+          {renderTabContent()}
+          
+          <div className="mt-6 flex justify-end">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleSave}
+              disabled={isLoading || isSaving}
+              className={`
+                inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium 
+                rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
+                ${(isLoading || isSaving) ? 'opacity-50 cursor-not-allowed' : ''}
+              `}
+            >
+              {isSaving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Saving...
+                </>
+              ) : 'Save Changes'}
+            </motion.button>
+          </div>
         </div>
       </div>
     </div>

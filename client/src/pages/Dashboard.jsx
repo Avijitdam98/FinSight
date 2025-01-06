@@ -24,6 +24,8 @@ import {
 } from '../store/slices/transactionSlice';
 import AIInsights from '../components/AIInsights';
 import ShareOptions from '../components/ShareOptions';
+import CurrencyDisplay from '../components/CurrencyDisplay';
+import { formatCurrency } from '../utils/currencyConverter';
 
 // Register ChartJS components
 ChartJS.register(
@@ -43,6 +45,7 @@ ChartJS.register(
 const Dashboard = () => {
   const dispatch = useDispatch();
   const transactions = useSelector(selectFilteredTransactions);
+  const { data: settings } = useSelector((state) => state.settings);
   const [monthlyData, setMonthlyData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -89,9 +92,11 @@ const Dashboard = () => {
     totalIncome: transactions
       .filter(t => t.type === 'income')
       .reduce((sum, t) => sum + Number(t.amount), 0),
+
     totalExpenses: transactions
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + Number(t.amount), 0),
+
     get balance() {
       return this.totalIncome - this.totalExpenses;
     }
@@ -408,7 +413,7 @@ const Dashboard = () => {
         },
         ticks: {
           color: 'rgb(156, 163, 175)',
-          callback: (value) => `$${value.toLocaleString()}`
+          callback: (value) => formatCurrency(value, settings?.preferences?.currency, 'USD')
         }
       },
       x: {
@@ -446,49 +451,41 @@ const Dashboard = () => {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Income</h3>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-              Income
-            </span>
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-gray-400">Total Income</h2>
+            <span className="bg-green-600 text-white text-xs px-2 py-1 rounded">Income</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            ${stats.totalIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-          <p className="text-sm text-green-600 dark:text-green-400 flex items-center">
-            <span className="mr-1">↑</span> Updated in real-time
-          </p>
+          <div className="text-2xl font-bold text-white">
+            <CurrencyDisplay amount={stats.totalIncome} type="income" />
+          </div>
+          <div className="text-green-400 text-sm mt-1">↑ Updated in real-time</div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Expenses</h3>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-              Expenses
-            </span>
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-gray-400">Total Expenses</h2>
+            <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">Expenses</span>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            ${stats.totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-          <p className="text-sm text-red-600 dark:text-red-400 flex items-center">
-            <span className="mr-1">↓</span> Track your spending
-          </p>
+          <div className="text-2xl font-bold text-white">
+            <CurrencyDisplay amount={stats.totalExpenses} type="expense" />
+          </div>
+          <div className="text-red-400 text-sm mt-1">↓ Track your spending</div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">Current Balance</h3>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-              Balance
-            </span>
+        <div className="bg-gray-800 p-4 rounded-lg">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-gray-400">Current Balance</h2>
+            <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded">Balance</span>
           </div>
-          <p className={`text-3xl font-bold mb-2 ${stats.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-            ${Math.abs(stats.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
-            <span className="mr-1">{stats.balance >= 0 ? '↑' : '↓'}</span> Net Position
-          </p>
+          <div className="text-2xl font-bold text-white">
+            <CurrencyDisplay 
+              amount={stats.balance} 
+              className={stats.balance >= 0 ? 'text-green-500' : 'text-red-500'}
+              showPositiveSign={true}
+            />
+          </div>
+          <div className="text-blue-400 text-sm mt-1">↓ Net Position</div>
         </div>
       </div>
 
@@ -556,7 +553,7 @@ const Dashboard = () => {
                   ...commonChartOptions.plugins,
                   tooltip: {
                     callbacks: {
-                      label: (context) => `$${context.raw.toLocaleString()}`
+                      label: (context) => formatCurrency(context.raw, settings?.preferences?.currency, 'USD')
                     }
                   }
                 }
@@ -583,7 +580,7 @@ const Dashboard = () => {
                     },
                     ticks: {
                       color: colors.neutral.main,
-                      callback: (value) => `$${value.toLocaleString()}`
+                      callback: (value) => formatCurrency(value, settings?.preferences?.currency, 'USD')
                     }
                   },
                   x: {
