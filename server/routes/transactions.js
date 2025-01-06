@@ -2,6 +2,8 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import auth from '../middleware/auth.js';
 import Transaction from '../models/Transaction.js';
+import Challenge from '../models/Challenge.js';
+import Badge from '../models/Badge.js';
 
 const router = express.Router();
 
@@ -44,6 +46,50 @@ router.post('/',
       });
 
       await transaction.save();
+
+      // Update related challenges
+      const activeChallenges = await Challenge.find({
+        userId: req.user.id,
+        status: { $ne: 'completed' },
+        endDate: { $gte: new Date() }
+      });
+
+      for (const challenge of activeChallenges) {
+        if ((challenge.type === 'savings' && type === 'income' && category === 'Savings') ||
+            (challenge.type === 'expense_reduction' && type === 'expense')) {
+          
+          // Calculate new progress
+          const relatedTransactions = await Transaction.find({
+            user: req.user.id,
+            date: { $gte: challenge.startDate, $lte: challenge.endDate },
+            type: challenge.type === 'savings' ? 'income' : 'expense',
+            ...(challenge.type === 'savings' ? { category: 'Savings' } : {})
+          });
+
+          const currentAmount = relatedTransactions.reduce((sum, t) => sum + t.amount, 0);
+          challenge.currentAmount = currentAmount;
+
+          // Check if challenge is completed
+          if (currentAmount >= challenge.targetAmount) {
+            challenge.status = 'completed';
+            
+            // Create badge
+            const badge = new Badge({
+              userId: req.user.id,
+              name: `${challenge.title} Champion`,
+              description: `Completed the ${challenge.title} challenge`,
+              icon: '🏆',
+              category: 'challenge',
+              completed: true
+            });
+            
+            await badge.save();
+          }
+
+          await challenge.save();
+        }
+      }
+
       res.status(201).json(transaction);
     } catch (error) {
       console.error('Error adding transaction:', error);

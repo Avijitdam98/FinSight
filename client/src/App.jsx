@@ -13,39 +13,67 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import PrivateRoute from './components/PrivateRoute';
+import BadgeNotification from './components/BadgeNotification';
+import Rewards from './pages/Rewards';
 
 function App() {
   return (
     <Provider store={store}>
       <ThemeProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <Helmet>
               <title>FinSight AI | Smart Personal Finance Tracker</title>
               <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-              <meta name="theme-color" content="#4f46e5" />
+              <meta name="theme-color" content="#000000" />
               <meta name="description" content="FinSight AI - Smart Personal Finance Tracker with AI Insights" />
             </Helmet>
             <Navbar />
+            <BadgeNotification />
             <Layout>
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/" element={
-                  <PrivateRoute>
-                    <Dashboard />
-                  </PrivateRoute>
-                } />
-                <Route path="/transactions" element={
-                  <PrivateRoute>
-                    <Transactions />
-                  </PrivateRoute>
-                } />
-                <Route path="/settings" element={
-                  <PrivateRoute>
-                    <Settings />
-                  </PrivateRoute>
-                } />
+                <Route
+                  path="/"
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <PrivateRoute>
+                      <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/transactions"
+                  element={
+                    <PrivateRoute>
+                      <Transactions />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/settings"
+                  element={
+                    <PrivateRoute>
+                      <Settings />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="/rewards"
+                  element={
+                    <PrivateRoute>
+                      <Rewards />
+                    </PrivateRoute>
+                  }
+                />
               </Routes>
             </Layout>
           </div>

@@ -4,6 +4,7 @@ const initialState = {
   transactions: [],
   loading: false,
   error: null,
+  success: false,
   filters: {
     type: '',
     category: '',
@@ -30,6 +31,9 @@ const transactionSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+    setSuccess: (state, action) => {
+      state.success = action.payload;
+    },
     addTransaction: (state, action) => {
       state.transactions.unshift(action.payload);
     },
@@ -55,6 +59,7 @@ export const {
   setTransactions,
   setLoading,
   setError,
+  setSuccess,
   addTransaction,
   updateTransaction,
   deleteTransaction,

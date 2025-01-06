@@ -318,34 +318,67 @@ const Dashboard = () => {
     }]
   };
 
-  // Weekly metrics with income/expense comparison
-  const weeklyData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        label: 'Income',
-        data: transactions
-          .filter(t => t.type === 'income')
-          .slice(-7)
-          .map(t => Number(t.amount)),
-        backgroundColor: colors.success.main.replace('rgb', 'rgba').replace(')', ', 0.7)'),
-        borderColor: colors.success.main,
-        borderWidth: 1,
-        stack: 'stack'
-      },
-      {
-        label: 'Expenses',
-        data: transactions
-          .filter(t => t.type === 'expense')
-          .slice(-7)
-          .map(t => Number(t.amount)),
-        backgroundColor: colors.error.main.replace('rgb', 'rgba').replace(')', ', 0.7)'),
-        borderColor: colors.error.main,
-        borderWidth: 1,
-        stack: 'stack'
+  // Calculate weekly data properly
+  const calculateWeeklyData = () => {
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - daysToMonday);
+    monday.setHours(0, 0, 0, 0);
+
+    // Initialize arrays for each day of the week
+    const weeklyIncome = Array(7).fill(0);
+    const weeklyExpenses = Array(7).fill(0);
+
+    // Process transactions
+    transactions.forEach(transaction => {
+      const transactionDate = new Date(transaction.date);
+      if (transactionDate >= monday) {
+        const dayIndex = transactionDate.getDay();
+        // Convert Sunday (0) to index 6, and other days to 0-5
+        const adjustedIndex = dayIndex === 0 ? 6 : dayIndex - 1;
+        
+        const amount = Number(transaction.amount);
+        if (transaction.type === 'income') {
+          weeklyIncome[adjustedIndex] += amount;
+        } else {
+          weeklyExpenses[adjustedIndex] += amount;
+        }
       }
-    ]
+    });
+
+    return {
+      income: weeklyIncome,
+      expenses: weeklyExpenses
+    };
   };
+
+  // Weekly metrics with income/expense comparison
+  const weeklyData = (() => {
+    const { income, expenses } = calculateWeeklyData();
+    return {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [
+        {
+          label: 'Income',
+          data: income,
+          backgroundColor: colors.success.main.replace('rgb', 'rgba').replace(')', ', 0.7)'),
+          borderColor: colors.success.main,
+          borderWidth: 1,
+          stack: 'stack'
+        },
+        {
+          label: 'Expenses',
+          data: expenses,
+          backgroundColor: colors.error.main.replace('rgb', 'rgba').replace(')', ', 0.7)'),
+          borderColor: colors.error.main,
+          borderWidth: 1,
+          stack: 'stack'
+        }
+      ]
+    };
+  })();
 
   // Chart options with consistent styling
   const commonChartOptions = {

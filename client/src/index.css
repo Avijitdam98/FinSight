@@ -18,3 +18,918 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+/* Custom Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Custom Classes */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Glass Effect */
+.glass-effect {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass-effect {
+  background: rgba(17, 24, 39, 0.1);
+}
+
+/* Modern UI Styles */
+.modern-gradient {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.modern-shadow {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.dark .modern-shadow {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Modern Glass Effect */
+.modern-glass {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .modern-glass {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modern Nav Items */
+.nav-item {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-item:hover::after {
+  width: 100%;
+}
+
+/* Modern Button Styles */
+.modern-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.modern-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transition: all 0.6s ease;
+}
+
+.modern-button:hover::before {
+  left: 100%;
+}
+
+/* Modern Dropdown Menu */
+.modern-dropdown {
+  transform-origin: top;
+  animation: dropdownEnter 0.2s ease forwards;
+}
+
+@keyframes dropdownEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modern Active Link Indicator */
+.active-link-indicator {
+  position: relative;
+}
+
+.active-link-indicator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  transform: translateY(-50%);
+}
+
+/* Modern Hover Effects */
+.hover-lift {
+  transition: transform 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* Modern Focus Rings */
+.modern-focus:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+.dark .modern-focus:focus {
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+}
+
+/* Modern Profile Button */
+.profile-button {
+  position: relative;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 5s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Modern Mobile Menu */
+.mobile-menu-enter {
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+}
+
+/* Modern Loading States */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Modern Card Effects */
+.modern-card {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.dark .modern-card {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modern-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.dark .modern-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Modern Text Gradients */
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Modern Transaction Table Styles */
+.transaction-table {
+  @apply overflow-hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.transaction-row {
+  @apply transition-all duration-200;
+  position: relative;
+  overflow: hidden;
+}
+
+.transaction-row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.transaction-row:hover::after {
+  transform: scaleX(1);
+}
+
+/* Modern Action Buttons */
+.action-button {
+  position: relative;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: transparent;
+  overflow: hidden;
+}
+
+.action-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  opacity: 0.1;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.action-button:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.edit-button {
+  @apply text-indigo-600 dark:text-indigo-400;
+}
+
+.edit-button:hover {
+  @apply text-indigo-800 dark:text-indigo-300;
+  transform: translateY(-1px);
+}
+
+.delete-button {
+  @apply text-red-600 dark:text-red-400;
+}
+
+.delete-button:hover {
+  @apply text-red-800 dark:text-red-300;
+  transform: translateY(-1px);
+}
+
+/* Modern Table Row Hover Effect */
+.transaction-row {
+  @apply transition-all duration-200;
+}
+
+.transaction-row:hover {
+  @apply bg-gray-50 dark:bg-gray-800;
+  transform: translateX(4px);
+}
+
+/* Modern Table Cell Styles */
+.table-cell {
+  @apply px-6 py-4 whitespace-nowrap text-sm transition-colors duration-200;
+}
+
+/* Transaction Type Badge */
+.transaction-type {
+  @apply px-3 py-1 rounded-full text-sm font-medium;
+  background: rgba(var(--type-color), 0.1);
+  color: rgb(var(--type-color));
+}
+
+.transaction-type.income {
+  --type-color: 34, 197, 94;
+}
+
+.transaction-type.expense {
+  --type-color: 239, 68, 68;
+}
+
+/* Modern Action Button Container */
+.action-buttons {
+  @apply flex items-center justify-end space-x-2;
+}
+
+/* Shimmer Loading Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.loading-row {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Modern Confirmation Dialog */
+.confirm-dialog {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.confirm-dialog-content {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full;
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+}
+
+.confirm-dialog-content.entering {
+  transform: translateY(20px);
+}
+
+.confirm-dialog-buttons {
+  @apply flex justify-end space-x-3 mt-6;
+}
+
+.confirm-button {
+  @apply px-4 py-2.5 rounded-lg font-medium transition-all duration-200;
+}
+
+.confirm-button.cancel {
+  @apply bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500;
+}
+
+.confirm-button.delete {
+  @apply bg-red-600 text-white hover:bg-red-700;
+}
+
+/* Modern Success/Error Messages */
+.transaction-message {
+  @apply fixed bottom-4 right-4 p-4 rounded-lg shadow-lg;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.success-message {
+  @apply bg-green-500 text-white;
+}
+
+.error-message {
+  @apply bg-red-500 text-white;
+}
+
+/* Modern Loading Spinner */
+.loading-spinner {
+  @apply w-5 h-5 border-2 rounded-full;
+  border-color: currentColor transparent currentColor transparent;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced Delete Dialog Styles */
+.delete-dialog-overlay {
+  @apply fixed inset-0 z-50;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.delete-dialog-ripple {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  background: rgba(239, 68, 68, 0.2);
+  border-radius: 50%;
+  animation: ripple 2s linear infinite;
+}
+
+@keyframes ripple {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.5;
+  }
+  100% {
+    width: 500px;
+    height: 500px;
+    opacity: 0;
+  }
+}
+
+.delete-dialog {
+  @apply fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 p-6;
+  animation: scaleIn 0.3s ease-out;
+}
+
+.delete-dialog-content {
+  @apply relative rounded-2xl bg-white dark:bg-gray-800 shadow-2xl;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.1);
+}
+
+.dark .delete-dialog-content {
+  background: rgba(31, 41, 55, 0.95);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.delete-dialog-header {
+  @apply p-6 text-center relative flex items-center justify-center flex-col;
+  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.delete-warning-icon {
+  @apply w-16 h-16 mb-4 text-red-500;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.delete-dialog-title {
+  @apply text-2xl font-bold;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.delete-dialog-body {
+  @apply p-6;
+}
+
+.delete-warning-text {
+  @apply text-red-500 font-semibold text-lg mb-4 text-center;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.delete-details-text {
+  @apply text-gray-600 dark:text-gray-300 mb-4 text-center;
+}
+
+.delete-transaction-details {
+  @apply bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 space-y-3;
+  border: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.detail-item {
+  @apply flex justify-between items-center;
+}
+
+.detail-label {
+  @apply text-gray-500 dark:text-gray-400 font-medium;
+}
+
+.detail-value {
+  @apply text-gray-900 dark:text-gray-100 font-semibold;
+}
+
+.detail-value.income {
+  @apply text-green-500;
+}
+
+.detail-value.expense {
+  @apply text-red-500;
+}
+
+.delete-dialog-buttons {
+  @apply flex justify-end space-x-4 p-6 bg-gray-50 dark:bg-gray-700/50 rounded-b-2xl;
+  border-top: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.delete-dialog-button {
+  @apply px-6 py-3 rounded-xl font-medium transition-all duration-200 transform flex items-center gap-2;
+  position: relative;
+  overflow: hidden;
+}
+
+.button-icon {
+  @apply text-lg;
+}
+
+.delete-dialog-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.delete-dialog-button:hover::before {
+  left: 100%;
+}
+
+.delete-dialog-button:hover {
+  transform: translateY(-2px);
+}
+
+.delete-dialog-button:active {
+  transform: translateY(1px);
+}
+
+.delete-dialog-cancel {
+  @apply bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.delete-dialog-confirm {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  @apply text-white;
+  box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25);
+}
+
+.delete-dialog-confirm:hover {
+  box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Modern Delete Button Styles */
+.delete-button {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium transition-all duration-200;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  transform-origin: center;
+}
+
+.delete-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.delete-button:hover::before {
+  left: 100%;
+}
+
+.delete-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.delete-button:active {
+  transform: translateY(1px);
+}
+
+/* Modern Edit Button Styles */
+.edit-button {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium transition-all duration-200;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  transform-origin: center;
+}
+
+.edit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.edit-button:hover::before {
+  left: 100%;
+}
+
+.edit-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.edit-button:active {
+  transform: translateY(1px);
+}
+
+/* Action Buttons Container */
+.action-buttons {
+  @apply flex items-center justify-end gap-2;
+}
+
+/* Modern Edit Dialog Styles */
+.edit-dialog-overlay {
+  @apply fixed inset-0 z-50;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.edit-dialog {
+  @apply fixed left-1/2 top-1/2 z-50 w-[95%] max-w-2xl -translate-x-1/2 -translate-y-1/2;
+  animation: scaleIn 0.3s ease-out;
+}
+
+.edit-dialog-content {
+  @apply relative rounded-2xl bg-[#1e2530] shadow-2xl overflow-hidden;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.1);
+}
+
+.edit-dialog-header {
+  @apply p-6 text-center;
+}
+
+.edit-icon {
+  @apply w-16 h-16 mb-4 text-indigo-500 mx-auto;
+  animation: bounce 2s infinite;
+}
+
+.edit-dialog-title {
+  @apply text-2xl font-bold mb-2 text-white;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.edit-dialog-subtitle {
+  @apply text-gray-400;
+}
+
+.edit-dialog-body {
+  @apply p-6;
+}
+
+.edit-form-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-6;
+}
+
+.form-group {
+  @apply flex flex-col gap-2;
+}
+
+.form-group.full-width {
+  @apply col-span-1 sm:col-span-2;
+}
+
+.form-label {
+  @apply text-sm font-medium text-gray-300;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  @apply w-full px-4 py-2.5 rounded-xl border border-gray-600
+         bg-[#2a3441] text-gray-100
+         focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+         transition-all duration-200;
+}
+
+.form-textarea {
+  @apply resize-none;
+  min-height: 100px;
+}
+
+.amount-input-wrapper {
+  @apply relative flex items-center;
+}
+
+.currency-symbol {
+  @apply absolute left-4 text-gray-400;
+}
+
+.amount-input-wrapper .form-input {
+  @apply pl-8;
+}
+
+.tags-input-wrapper {
+  @apply flex flex-wrap gap-2 p-2 rounded-xl border border-gray-600
+         bg-[#2a3441] min-h-[2.5rem];
+}
+
+.tag-item {
+  @apply inline-flex items-center gap-1 px-3 py-1 rounded-lg text-sm
+         bg-indigo-900 text-indigo-300;
+}
+
+.tag-remove {
+  @apply ml-1 text-indigo-400 hover:text-indigo-200 transition-colors duration-200;
+}
+
+.tags-input {
+  @apply flex-1 min-w-[8rem] bg-transparent border-none focus:outline-none 
+         text-gray-100 placeholder-gray-500;
+}
+
+.edit-dialog-buttons {
+  @apply flex justify-end gap-4 p-6 bg-[#1a202c] rounded-b-2xl;
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.edit-dialog-button {
+  @apply px-6 py-2.5 rounded-xl font-medium transition-all duration-200 
+         transform flex items-center gap-2 text-sm;
+}
+
+.edit-dialog-cancel {
+  @apply bg-gray-700 text-gray-300 hover:bg-gray-600;
+}
+
+.edit-dialog-save {
+  @apply text-white;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.edit-dialog-save:hover {
+  filter: brightness(1.1);
+}
+
+/* Loading State */
+.loading-overlay {
+  @apply absolute inset-0 bg-[#1e2530]/50 
+         flex items-center justify-center rounded-2xl z-50;
+  backdrop-filter: blur(4px);
+}
+
+.loading-spinner {
+  @apply w-8 h-8 border-4 border-indigo-500 border-t-transparent 
+         rounded-full animate-spin;
+}
+
+/* Error State */
+.error-message {
+  @apply text-sm text-red-500 mt-1;
+}

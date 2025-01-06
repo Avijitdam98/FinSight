@@ -3,6 +3,21 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api';
 
+// Load saved preferences from localStorage
+const loadSavedPreferences = () => {
+  try {
+    const savedPreferences = localStorage.getItem('userPreferences');
+    if (savedPreferences) {
+      return JSON.parse(savedPreferences);
+    }
+  } catch (error) {
+    console.error('Error loading preferences:', error);
+  }
+  return null;
+};
+
+const savedPreferences = loadSavedPreferences();
+
 // Set up axios interceptor for auth token
 axios.interceptors.request.use(
   (config) => {
@@ -20,8 +35,8 @@ axios.interceptors.request.use(
 const initialState = {
   data: {
     preferences: {
-      currency: 'USD',
-      dateFormat: 'MM/DD/YYYY',
+      currency: savedPreferences?.preferences?.currency || 'USD',
+      dateFormat: savedPreferences?.preferences?.dateFormat || 'MM/DD/YYYY',
       notifications: {
         emailAlerts: true,
         pushNotifications: true,
@@ -66,26 +81,23 @@ const settingsSlice = createSlice({
   initialState,
   reducers: {
     updateSettingLocally: (state, action) => {
-      const { category, field, value } = action.payload;
+      const { path, value } = action.payload;
+      let current = state.data;
+      const pathArray = path.split('.');
       
-      // Handle nested notifications updates
-      if (category === 'preferences' && field === 'notifications') {
-        state.data.preferences.notifications[value] = !state.data.preferences.notifications[value];
-        return;
+      // Navigate to the nested location
+      for (let i = 0; i < pathArray.length - 1; i++) {
+        current = current[pathArray[i]];
       }
-
-      // Handle regular field updates
-      if (!state.data[category]) {
-        state.data[category] = {};
-      }
-      if (field.includes('.')) {
-        const [parentField, childField] = field.split('.');
-        if (!state.data[category][parentField]) {
-          state.data[category][parentField] = {};
-        }
-        state.data[category][parentField][childField] = value;
-      } else {
-        state.data[category][field] = value;
+      
+      // Update the value
+      current[pathArray[pathArray.length - 1]] = value;
+      
+      // Save to localStorage
+      try {
+        localStorage.setItem('userPreferences', JSON.stringify(state.data));
+      } catch (error) {
+        console.error('Error saving preferences:', error);
       }
     }
   },
@@ -98,7 +110,12 @@ const settingsSlice = createSlice({
       .addCase(fetchSettings.fulfilled, (state, action) => {
         state.isLoading = false;
         state.data = action.payload;
-        state.error = null;
+        // Save fetched settings to localStorage
+        try {
+          localStorage.setItem('userPreferences', JSON.stringify(action.payload));
+        } catch (error) {
+          console.error('Error saving fetched preferences:', error);
+        }
       })
       .addCase(fetchSettings.rejected, (state, action) => {
         state.isLoading = false;

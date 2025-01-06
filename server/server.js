@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js';
 import transactionRoutes from './routes/transactions.js';
 import insightRoutes from './routes/insights.js';
 import settingsRoutes from './routes/settings.js';
+import rewardsRoutes from './routes/rewards.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/insights', insightRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/rewards', rewardsRoutes);
 
 const PORT = process.env.PORT || 5000;
 

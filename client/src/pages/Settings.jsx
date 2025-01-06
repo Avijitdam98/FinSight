@@ -36,6 +36,13 @@ const Settings = () => {
     }));
   };
 
+  const handleCurrencyChange = (currency) => {
+    dispatch(updateSettingLocally({
+      path: 'preferences.currency',
+      value: currency
+    }));
+  };
+
   const handleSave = async () => {
     try {
       setIsSaving(true);
@@ -119,7 +126,7 @@ const Settings = () => {
               </label>
               <select
                 value={settings.preferences?.currency || 'USD'}
-                onChange={(e) => handleSettingChange('preferences', 'currency', e.target.value)}
+                onChange={(e) => handleCurrencyChange(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600"
               >
                 <option value="USD">USD ($)</option>
