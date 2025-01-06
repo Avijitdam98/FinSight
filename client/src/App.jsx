@@ -9,6 +9,7 @@ import Navbar from './components/Navbar';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import PrivateRoute from './components/PrivateRoute';
@@ -38,6 +39,11 @@ function App() {
                 <Route path="/transactions" element={
                   <PrivateRoute>
                     <Transactions />
+                  </PrivateRoute>
+                } />
+                <Route path="/settings" element={
+                  <PrivateRoute>
+                    <Settings />
                   </PrivateRoute>
                 } />
               </Routes>

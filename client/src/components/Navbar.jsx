@@ -82,6 +82,13 @@ const Navbar = () => {
                     <span>Transactions</span>
                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform" />
                   </Link>
+                  <Link
+                    to="/settings"
+                    className="relative group px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  >
+                    <span>Settings</span>
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 dark:bg-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform" />
+                  </Link>
                 </>
               )}
             </div>
@@ -183,6 +190,13 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     Transactions
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="block px-3 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Settings
                   </Link>
                 </>
               )}
