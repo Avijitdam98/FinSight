@@ -380,6 +380,101 @@ const Dashboard = () => {
     };
   })();
 
+  // Calculate monthly spending totals from transactions
+  const calculateMonthlySpending = (transactions) => {
+    const monthlyTotals = {};
+    transactions.forEach((transaction) => {
+      const date = new Date(transaction.date);
+      const month = date.toLocaleString('default', { month: 'long' });
+      if (!monthlyTotals[month]) {
+        monthlyTotals[month] = 0;
+      }
+      monthlyTotals[month] += transaction.amount;
+    });
+    return monthlyTotals;
+  };
+
+  const monthlySpending = calculateMonthlySpending(transactions);
+  const spendingTrendsData = {
+    labels: Object.keys(monthlySpending),
+    datasets: [
+      {
+        label: 'Spending Trends',
+        data: Object.values(monthlySpending),
+        fill: false,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+      },
+    ],
+  };
+
+  const calculateIncomeVsExpenses = (transactions) => {
+    let income = 0;
+    let expenses = 0;
+    transactions.forEach((transaction) => {
+      if (transaction.type === 'income') {
+        income += transaction.amount;
+      } else if (transaction.type === 'expense') {
+        expenses += transaction.amount;
+      }
+    });
+    return { income, expenses };
+  };
+
+  const { income, expenses } = calculateIncomeVsExpenses(transactions);
+  const incomeVsExpensesData = {
+    labels: ['Income', 'Expenses'],
+    datasets: [
+      {
+        data: [income, expenses],
+        backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+        borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const calculateCategoryBreakdown = (transactions) => {
+    const categoryTotals = {};
+    transactions.forEach((transaction) => {
+      if (transaction.type === 'expense') {
+        const category = transaction.category;
+        if (!categoryTotals[category]) {
+          categoryTotals[category] = 0;
+        }
+        categoryTotals[category] += transaction.amount;
+      }
+    });
+    return categoryTotals;
+  };
+
+  const categoryBreakdown = calculateCategoryBreakdown(transactions);
+  const categoryBreakdownData = {
+    labels: Object.keys(categoryBreakdown),
+    datasets: [
+      {
+        data: Object.values(categoryBreakdown),
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
   // Chart options with consistent styling
   const commonChartOptions = {
     responsive: true,
@@ -471,6 +566,11 @@ const Dashboard = () => {
     ],
   };
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
       {/* Header Section */}
@@ -545,22 +645,50 @@ const Dashboard = () => {
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
-            <span>Income vs Expenses</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Distribution</span>
+            <span>Spending Trends</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Last 6 Months</span>
           </h3>
           <div className="h-80">
-            <Pie 
-              data={pieChartData}
+            <Line 
+              data={spendingTrendsData}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                   legend: {
-                    position: 'bottom',
+                    position: 'top',
                     labels: {
+                      usePointStyle: true,
+                      color: 'rgb(156, 163, 175)'
+                    }
+                  },
+                  title: {
+                    display: true,
+                    text: 'Spending Trends',
+                    color: 'rgb(156, 163, 175)',
+                    font: {
+                      size: 16,
+                      weight: 'bold'
+                    }
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: {
+                      color: 'rgba(156, 163, 175, 0.1)'
+                    },
+                    ticks: {
                       color: 'rgb(156, 163, 175)',
-                      padding: 20,
-                      usePointStyle: true
+                      callback: (value) => formatCurrency(value, settings?.preferences?.currency, 'USD')
+                    }
+                  },
+                  x: {
+                    grid: {
+                      color: 'rgba(156, 163, 175, 0.1)'
+                    },
+                    ticks: {
+                      color: 'rgb(156, 163, 175)'
                     }
                   }
                 }
@@ -572,6 +700,22 @@ const Dashboard = () => {
 
       {/* Additional Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+            <span>Category Breakdown</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Spending by Category</span>
+          </h3>
+          <Bar data={categoryBreakdownData} />
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+            <span>Income vs Expenses</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Distribution</span>
+          </h3>
+          <Pie data={incomeVsExpensesData} />
+        </div>
+
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
             <span>Expense Categories</span>
@@ -594,7 +738,10 @@ const Dashboard = () => {
             />
           </div>
         </div>
+      </div>
 
+      {/* Additional Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
             <span>Weekly Cash Flow</span>
@@ -634,38 +781,42 @@ const Dashboard = () => {
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
             <span>Financial Wellness</span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">8 Key Metrics</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Metrics</span>
           </h3>
           <div className="h-64">
             <Radar 
               data={radarData}
               options={{
                 ...commonChartOptions,
-                scales: {
-                  r: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                      stepSize: 20,
-                      display: false
-                    },
-                    grid: {
-                      color: colors.neutral.light
-                    },
-                    angleLines: {
-                      color: colors.neutral.light
-                    },
-                    pointLabels: {
-                      color: colors.neutral.main,
-                      font: {
-                        size: 10
-                      }
+                plugins: {
+                  ...commonChartOptions.plugins,
+                  tooltip: {
+                    callbacks: {
+                      label: (context) => `${context.dataset.label}: ${context.formattedValue}%`
                     }
                   }
                 }
               }}
             />
           </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <h3 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center justify-between">
+            <span>Recent Transactions</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal">Latest Activity</span>
+          </h3>
+          <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+            {transactions.slice(0, 5).map((transaction, index) => (
+              <li key={transaction.id || index} className="py-4 flex justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{transaction.category}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{formatDate(transaction.date)}</p>
+                </div>
+                <div className="text-sm text-gray-900 dark:text-white">{transaction.amount}</div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
